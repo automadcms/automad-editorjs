@@ -60,6 +60,14 @@ export default class BlockEvents extends Module {
         }
         break;
     }
+
+    if (event.key == "/") {
+      if (event.ctrlKey || event.metaKey) {
+        this.commandSlashPressed();
+      } else {
+        this.slashPressed();
+      }
+    }
   }
 
   /**
