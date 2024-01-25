@@ -1,10 +1,15 @@
+> Note that this is a fork of [codex-team/editor.js](https://github.com/codex-team/editor.js)
+> that is optimized to work with [Automad](https://automad.org).
+
+---
+
 <p align="center">
   <a href="https://editorjs.io/">
     <picture>
       <source media="(prefers-color-scheme: dark)"  srcset="./assets/logo_night.png">
       <source media="(prefers-color-scheme: light)" srcset="./assets/logo_day.png">
       <img alt="Editor.js Logo" src="./assets/logo_day.png">
-    </picture>    
+    </picture>
   </a>
 </p>
 
@@ -12,7 +17,7 @@
  <a href="https://editorjs.io/">editorjs.io</a> |
   <a href="https://editorjs.io/base-concepts/">documentation</a> |
   <a href="https://github.com/codex-team/editor.js/blob/next/docs/CHANGELOG.md">changelog</a>
-  
+
 </p>
 
 <p align="center">
@@ -34,7 +39,7 @@
 
 Editor.js is an open-source text editor offering a variety of features to help users create and format content efficiently. It has a modern, block-style interface that allows users to easily add and arrange different types of content, such as text, images, lists, quotes, etc. Each Block is provided via a separate plugin making Editor.js extremely flexible.
 
-Editor.js outputs a clean JSON data instead of heavy HTML markup. Use it in Web, iOS, Android, AMP, Instant Articles, speech readers, AI chatbots — everywhere. Easy to sanitize, extend and integrate with your logic. 
+Editor.js outputs a clean JSON data instead of heavy HTML markup. Use it in Web, iOS, Android, AMP, Instant Articles, speech readers, AI chatbots — everywhere. Easy to sanitize, extend and integrate with your logic.
 
 - 😍  Modern UI out of the box
 - 💎  Clean JSON output
@@ -44,13 +49,13 @@ Editor.js outputs a clean JSON data instead of heavy HTML markup. Use it in Web,
 
 <picture>
   <img alt="Editor.js Overview" src="./assets/overview.png">
-</picture>   
+</picture>
 
 ## Installation
 
 It's quite simple:
 
-1. Install Editor.js 
+1. Install Editor.js
 2. Install tools you need
 3. Initialize Editor's instance
 
@@ -64,7 +69,7 @@ Choose and install tools:
 
 - [Heading](https://github.com/editor-js/header)
 - [Quote](https://github.com/editor-js/quote)
-- [Image](https://github.com/editor-js/image) 
+- [Image](https://github.com/editor-js/image)
 - [Simple Image](https://github.com/editor-js/simple-image) (without backend requirement)
 - [Nested List](https://github.com/editor-js/nested-list)
 - [Checklist](https://github.com/editor-js/checklist)
@@ -88,14 +93,14 @@ Initialize the Editor:
 ```
 
 ```javascript
-import EditorJS from '@editorjs/editorjs'
+import EditorJS from "@editorjs/editorjs";
 
 const editor = new EditorJS({
   tools: {
-   // ... your tools
-  }
-})
-````
+    // ... your tools
+  },
+});
+```
 
 See details about [Installation](https://editorjs.io/getting-started/) and [Configuration](https://editorjs.io/configuration/) at the documentation.
 
@@ -104,13 +109,12 @@ See details about [Installation](https://editorjs.io/getting-started/) and [Conf
 Call `editor.save()` and handle returned Promise with saved data.
 
 ```javascript
-const data = await editor.save()
+const data = await editor.save();
 ```
 
 ### Example
 
 Take a look at the [example.html](example/example.html) to view more detailed examples.
-
 
 ## Roadmap
 
@@ -176,7 +180,6 @@ Donations to open-source products have several advantages for your business:
 - We need to pay for our infrastructure and maintain public resources (domain names, homepages, docs, etc). Supporting it guarantees you to access any resources at the time you need them.
 - You can advertise by adding your brand assets and mentions on our public resources
 
-
 ### Sponsors
 
 Support us by becoming a sponsor. Your logo will show up here with a link to your website.
@@ -199,7 +202,8 @@ Support us by becoming a sponsor. Your logo will show up here with a link to you
 [Become a Sponsor](https://opencollective.com/editorjs/contribute/sir-8679/checkout)
 
 ### Backers
- Thank you to all our backers
+
+Thank you to all our backers
 
 <a href="https://opencollective.com/editorjs#backers" target="_blank"><img src="https://opencollective.com/editorjs/backers.svg?width=890&avatarHeight=34"></a>
 
@@ -207,13 +211,13 @@ Support us by becoming a sponsor. Your logo will show up here with a link to you
 
 ### Contributors
 
-This project exists thanks to all the people who contribute. 
+This project exists thanks to all the people who contribute.
 
 <p><img src="https://opencollective.com/editorjs/contributors.svg?width=890&button=false&avatarHeight=34" /></p>
 
 ### Need something special?
 
-Hire CodeX experts to resolve technical challenges and match your product requirements. 
+Hire CodeX experts to resolve technical challenges and match your product requirements.
 
 - Resolve a problem that has high value for you
 - Implement a new feature required by your business
@@ -236,6 +240,6 @@ Contact us via team@codex.so and share your details
 
 CodeX is a team of digital specialists around the world interested in building high-quality open source products on a global market. We are [open](https://codex.so/join) for young people who want to constantly improve their skills and grow professionally with experiments in cutting-edge technologies.
 
-| 🌐 | Join  👋  | Twitter | Instagram |
-| -- | -- | -- | -- |
-| [codex.so](https://codex.so) | [codex.so/join](https://codex.so/join) |[@codex_team](http://twitter.com/codex_team) | [@codex_team](http://instagram.com/codex_team/) |
+| 🌐                           | Join 👋                                | Twitter                                      | Instagram                                       |
+| ---------------------------- | -------------------------------------- | -------------------------------------------- | ----------------------------------------------- |
+| [codex.so](https://codex.so) | [codex.so/join](https://codex.so/join) | [@codex_team](http://twitter.com/codex_team) | [@codex_team](http://instagram.com/codex_team/) |
