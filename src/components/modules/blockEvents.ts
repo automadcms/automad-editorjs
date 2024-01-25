@@ -146,7 +146,9 @@ export default class BlockEvents extends Module {
   public dragLeave(event: DragEvent): void {
     const block = this.Editor.BlockManager.getBlockByChildNode(event.target as Node);
 
-    block.dropTarget = false;
+    if (block) {
+      block.dropTarget = false;
+    }
   }
 
   /**
