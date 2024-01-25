@@ -5,6 +5,7 @@ import BlockAPI from '../../block/api';
 import Module from '../../__module';
 import Block from '../../block';
 import { capitalize } from './../../utils';
+import { BlockTuneData } from "../../../../types/block-tunes/block-tune-data";
 
 /**
  * @class BlocksAPI
@@ -244,6 +245,7 @@ export default class BlocksAPI extends Module {
    * @param {boolean?} needToFocus - flag to focus inserted Block
    * @param replace - pass true to replace the Block existed under passed index
    * @param {string} id — An optional id for the new block. If omitted then the new id will be generated
+   * @param {BlockTuneData} tunes
    */
   public insert = (
     type: string = this.config.defaultBlock,
@@ -253,7 +255,8 @@ export default class BlocksAPI extends Module {
     index?: number,
     needToFocus?: boolean,
     replace?: boolean,
-    id?: string
+    id?: string,
+    tunes?: BlockTuneData,
   ): BlockAPIInterface => {
     const insertedBlock = this.Editor.BlockManager.insert({
       id,
@@ -262,6 +265,7 @@ export default class BlocksAPI extends Module {
       index,
       needToFocus,
       replace,
+      tunes,
     });
 
     return new BlockAPI(insertedBlock);

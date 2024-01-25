@@ -1,6 +1,7 @@
 import {OutputBlockData, OutputData} from '../data-formats/output-data';
 import {BlockToolData, ToolConfig} from '../tools';
 import {BlockAPI} from './block';
+import { BlockTuneData } from "../block-tunes/block-tune-data";
 
 /**
  * Describes methods to manipulate with Editor`s blocks
@@ -103,6 +104,7 @@ export interface Blocks {
    * @param {boolean?} needToFocus - flag to focus inserted Block
    * @param {boolean?} replace - should the existed Block on that index be replaced or not
    * @param {string} id — An optional id for the new block. If omitted then the new id will be generated
+   * @param {BlockTuneData} tunes
    */
   insert(
     type?: string,
@@ -112,6 +114,7 @@ export interface Blocks {
     needToFocus?: boolean,
     replace?: boolean,
     id?: string,
+    tunes?: BlockTuneData,
   ): BlockAPI;
 
   /**
