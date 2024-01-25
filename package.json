@@ -35,7 +35,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/codex-team/editor.js.git"
+    "url": "git+https://github.com/automadcms/editorjs.git"
   },
   "devDependencies": {
     "@babel/register": "^7.21.0",
