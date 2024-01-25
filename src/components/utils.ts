@@ -660,7 +660,7 @@ export function getValidUrl(url: string): string {
  * @returns {string}
  */
 export function generateBlockId(): string {
-  const idLen = 10;
+  const idLen = 32;
 
   return nanoid(idLen);
 }
