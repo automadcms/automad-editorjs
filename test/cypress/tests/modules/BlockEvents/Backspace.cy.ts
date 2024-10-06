@@ -1,26 +1,125 @@
 import type EditorJS from '../../../../../types/index';
-import Chainable = Cypress.Chainable;
-
-
-/**
- * Creates Editor instance with list of Paragraph blocks of passed texts
- *
- * @param textBlocks - list of texts for Paragraph blocks
- */
-function createEditorWithTextBlocks(textBlocks: string[]): Chainable<EditorJS> {
-  return cy.createEditor({
-    data: {
-      blocks: textBlocks.map((text) => ({
-        type: 'paragraph',
-        data: {
-          text,
-        },
-      })),
-    },
-  });
-}
+import { SimpleHeader } from '../../../fixtures/tools/SimpleHeader';
+import type { ConversionConfig } from '../../../../../types/index';
+import { createEditorWithTextBlocks } from '../../../support/utils/createEditorWithTextBlocks';
 
 describe('Backspace keydown', function () {
+  describe('starting whitespaces handling', function () {
+    it('&nbsp;| — should delete visible space', function () {
+      createEditorWithTextBlocks([
+        '1',
+        '&nbsp;2',
+      ]);
+
+      cy.get('[data-cy=editorjs]')
+        .find('.ce-paragraph')
+        .last()
+        .click()
+        .type('{leftArrow}') // set caret before "2"
+        .type('{backspace}');
+
+      cy.get('[data-cy=editorjs]')
+        .find('div.ce-block')
+        .last()
+        .should('have.text', '2');
+    });
+    it(' | — should ignore invisible space before caret and handle it like regular backspace case (merge with previous)', function () {
+      createEditorWithTextBlocks([
+        '1',
+        ' 2',
+      ]);
+
+      cy.get('[data-cy=editorjs]')
+        .find('.ce-paragraph')
+        .last()
+        .click()
+        .type('{leftArrow}') // set caret before "2"
+        .type('{backspace}');
+
+      cy.get('[data-cy=editorjs]')
+        .find('div.ce-block')
+        .last()
+        .should('have.text', '12');
+    });
+    it('<b></b>| — should ignore empty tags before caret and handle it like regular backspace case (merge with previous)', function () {
+      createEditorWithTextBlocks([
+        '1',
+        '<b></b>2',
+      ]);
+
+      cy.get('[data-cy=editorjs]')
+        .find('.ce-paragraph')
+        .last()
+        .click()
+        .type('{leftArrow}') // set caret before "2"
+        .type('{backspace}');
+
+      cy.get('[data-cy=editorjs]')
+        .find('div.ce-block')
+        .last()
+        .should('have.text', '12');
+    });
+    it('<b></b>&nbsp;| — should remove visible space and ignore empty tag', function () {
+      createEditorWithTextBlocks([
+        '1',
+        '<b></b>&nbsp;2',
+      ]);
+
+      cy.get('[data-cy=editorjs]')
+        .find('.ce-paragraph')
+        .last()
+        .click()
+        .type('{leftArrow}') // set caret before "2"
+        .type('{backspace}') // remove nbsp
+        .type('{backspace}'); // ignore empty tag and merge
+
+      cy.get('[data-cy=editorjs]')
+        .find('div.ce-block')
+        .last()
+        .should('have.text', '12');
+    });
+
+    it('&nbsp;<b></b>| — should remove visible space and ignore empty tag', function () {
+      createEditorWithTextBlocks([
+        '1',
+        '<b></b>&nbsp;2',
+      ]);
+
+      cy.get('[data-cy=editorjs]')
+        .find('.ce-paragraph')
+        .last()
+        .click()
+        .type('{leftArrow}') // set caret before "2"
+        .type('{backspace}') // remove nbsp
+        .type('{backspace}'); // ignore empty tag and merge
+
+      cy.get('[data-cy=editorjs]')
+        .find('div.ce-block')
+        .last()
+        .should('have.text', '12');
+    });
+
+    it(' &nbsp;| — should remove visible space and ignore space', function () {
+      createEditorWithTextBlocks([
+        '1',
+        ' &nbsp;2',
+      ]);
+
+      cy.get('[data-cy=editorjs]')
+        .find('.ce-paragraph')
+        .last()
+        .click()
+        .type('{leftArrow}') // set caret before "2"
+        .type('{backspace}') // remove nbsp
+        .type('{backspace}'); // ignore regular space and merge
+
+      cy.get('[data-cy=editorjs]')
+        .find('div.ce-block')
+        .last()
+        .should('have.text', '12');
+    });
+  });
+
   it('should just delete chars (native behaviour) when some fragment is selected', function () {
     createEditorWithTextBlocks([
       'The first block',
@@ -293,11 +392,142 @@ describe('Backspace keydown', function () {
       .should('not.have.class', 'ce-toolbar--opened');
   });
 
-  it('should simply set Caret to the end of the previous Block if Caret at the start of the Block but Blocks are not mergeable. Also, should close the Toolbox.', function () {
+  it('should merge blocks of different types (Paragraph -> Header) if they have a valid conversion config. Also, should close the Toolbox. Caret should be places in a place of glue', function () {
+    cy.createEditor({
+      tools: {
+        header: SimpleHeader,
+      },
+      data: {
+        blocks: [
+          {
+            id: 'block1',
+            type: 'header',
+            data: {
+              text: 'First block heading',
+            },
+          },
+          {
+            id: 'block2',
+            type: 'paragraph',
+            data: {
+              text: 'Second block paragraph',
+            },
+          },
+        ],
+      },
+    }).as('editorInstance');
+
+    cy.get('[data-cy=editorjs]')
+      .find('.ce-paragraph')
+      .last()
+      .click()
+      .type('{home}') // move caret to the beginning
+      .type('{backspace}');
+
+    cy.get<EditorJS>('@editorInstance')
+      .then(async (editor) => {
+        const { blocks } = await editor.save();
+
+        expect(blocks.length).to.eq(1); // one block has been removed
+        expect(blocks[0].id).to.eq('block1'); // second block is still here
+        expect(blocks[0].data.text).to.eq('First block headingSecond block paragraph'); // text has been merged
+      });
+
     /**
-     * Mock of tool without merge method
+     * Caret is set to the place of merging
      */
-    class ExampleOfUnmergeableTool {
+    cy.window()
+      .then((window) => {
+        const selection = window.getSelection();
+        const range = selection.getRangeAt(0);
+
+        cy.get('[data-cy=editorjs]')
+          .find('[data-cy=block-wrapper]')
+          .should(($block) => {
+            expect($block[0].contains(range.startContainer)).to.be.true;
+            range.startContainer.normalize(); // glue merged text nodes
+            expect(range.startOffset).to.be.eq('First block heading'.length);
+          });
+      });
+
+    /**
+     * Toolbox has been closed
+     */
+    cy.get('[data-cy=editorjs]')
+      .find('.ce-toolbar')
+      .should('not.have.class', 'ce-toolbar--opened');
+  });
+
+  it('should merge blocks of different types (Header -> Paragraph) if they have a valid conversion config. Also, should close the Toolbox. Caret should be places in a place of glue', function () {
+    cy.createEditor({
+      tools: {
+        header: SimpleHeader,
+      },
+      data: {
+        blocks: [
+          {
+            id: 'block1',
+            type: 'paragraph',
+            data: {
+              text: 'First block paragraph',
+            },
+          },
+          {
+            id: 'block2',
+            type: 'header',
+            data: {
+              text: 'Second block heading',
+            },
+          },
+        ],
+      },
+    }).as('editorInstance');
+
+    cy.get('[data-cy=editorjs]')
+      .find('[data-cy="block-wrapper"][data-id="block2"]')
+      .click()
+      .type('{home}') // move caret to the beginning
+      .type('{backspace}');
+
+    cy.get<EditorJS>('@editorInstance')
+      .then(async (editor) => {
+        const { blocks } = await editor.save();
+
+        expect(blocks.length).to.eq(1); // one block has been removed
+        expect(blocks[0].id).to.eq('block1'); // second block is still here
+        expect(blocks[0].data.text).to.eq('First block paragraphSecond block heading'); // text has been merged
+      });
+
+    /**
+     * Caret is set to the place of merging
+     */
+    cy.window()
+      .then((window) => {
+        const selection = window.getSelection();
+        const range = selection.getRangeAt(0);
+
+        cy.get('[data-cy=editorjs]')
+          .find('[data-cy=block-wrapper]')
+          .should(($block) => {
+            expect($block[0].contains(range.startContainer)).to.be.true;
+            range.startContainer.normalize(); // glue merged text nodes
+            expect(range.startOffset).to.be.eq('First block paragraph'.length);
+          });
+      });
+
+    /**
+     * Toolbox has been closed
+     */
+    cy.get('[data-cy=editorjs]')
+      .find('.ce-toolbar')
+      .should('not.have.class', 'ce-toolbar--opened');
+  });
+
+  it('should simply set Caret to the end of the previous Block if Caret at the start of the Block but Blocks are not mergeable (target Bock is lack of merge() and conversionConfig). Also, should close the Toolbox.', function () {
+    /**
+     * Mock of tool without merge() method
+     */
+    class UnmergeableToolWithoutConversionConfig {
       /**
        * Render method mock
        */
@@ -320,7 +550,90 @@ describe('Backspace keydown', function () {
 
     cy.createEditor({
       tools: {
-        code: ExampleOfUnmergeableTool,
+        code: UnmergeableToolWithoutConversionConfig,
+      },
+      data: {
+        blocks: [
+          {
+            type: 'code',
+            data: {},
+          },
+          {
+            type: 'paragraph',
+            data: {
+              text: 'Second block',
+            },
+          },
+        ],
+      },
+    });
+
+    cy.get('[data-cy=editorjs]')
+      .find('.ce-paragraph')
+      .last()
+      .click()
+      .type('{home}')
+      .type('{backspace}');
+
+    cy.get('[data-cy=editorjs]')
+      .find('[data-cy=unmergeable-tool]')
+      .as('firstBlock');
+
+    /**
+     * Caret is set to the previous Block
+     */
+    cy.window()
+      .then((window) => {
+        const selection = window.getSelection();
+        const range = selection.getRangeAt(0);
+
+        cy.get('@firstBlock').should(($div) => {
+          expect($div[0].contains(range.startContainer)).to.be.true;
+        });
+      });
+  });
+
+  it('should simply set Caret to the end of the previous Block if Caret at the start of the Block but Blocks are not mergeable (target Bock is lack of merge() but has the conversionConfig). Also, should close the Toolbox.', function () {
+    /**
+     * Mock of tool without merge() method
+     */
+    class UnmergeableToolWithConversionConfig {
+      /**
+       * Render method mock
+       */
+      public render(): HTMLElement {
+        const container = document.createElement('div');
+
+        container.dataset.cy = 'unmergeable-tool';
+        container.contentEditable = 'true';
+        container.innerHTML = 'Unmergeable not empty tool';
+
+        return container;
+      }
+
+      /**
+       * Saving logic is not necessary for this test
+       */
+      public save(): { key: string } {
+        return {
+          key: 'value',
+        };
+      }
+
+      /**
+       * Mock of the conversionConfig
+       */
+      public static get conversionConfig(): ConversionConfig {
+        return {
+          export: 'key',
+          import: 'key',
+        };
+      }
+    }
+
+    cy.createEditor({
+      tools: {
+        code: UnmergeableToolWithConversionConfig,
       },
       data: {
         blocks: [

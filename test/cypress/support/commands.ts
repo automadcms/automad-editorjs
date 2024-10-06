@@ -234,3 +234,45 @@ Cypress.Commands.add('getLineWrapPositions', {
 
   return cy.wrap(lineWraps);
 });
+
+/**
+ * Dispatches keydown event on subject
+ * Uses the correct KeyboardEvent object to make it work with our code (see below)
+ */
+Cypress.Commands.add('keydown', {
+  prevSubject: true,
+}, (subject, keyCode: number) => {
+  cy.log('Dispatching KeyboardEvent with keyCode: ' + keyCode);
+  /**
+   * We use the "reason instanceof KeyboardEvent" statement in blockSelection.ts
+   * but by default cypress' KeyboardEvent is not an instance of the native KeyboardEvent,
+   * so real-world and Cypress behaviour were different.
+   *
+   * To make it work we need to trigger Cypress event with "eventConstructor: 'KeyboardEvent'",
+   *
+   * @see https://github.com/cypress-io/cypress/issues/5650
+   * @see https://github.com/cypress-io/cypress/pull/8305/files
+   */
+  subject.trigger('keydown', {
+    eventConstructor: 'KeyboardEvent',
+    keyCode,
+    bubbles: false,
+  });
+
+  return cy.wrap(subject);
+});
+
+/**
+ * Extract content of pseudo element
+ *
+ * @example cy.get('element').getPseudoElementContent('::before').should('eq', 'my-test-string')
+ */
+Cypress.Commands.add('getPseudoElementContent', {
+  prevSubject: true,
+}, (subject, pseudoElement: 'string') => {
+  const win = subject[0].ownerDocument.defaultView;
+  const computedStyle = win.getComputedStyle(subject[0], pseudoElement);
+  const content = computedStyle.getPropertyValue('content');
+
+  return content.replace(/['"]/g, ''); // Remove quotes around the content
+});

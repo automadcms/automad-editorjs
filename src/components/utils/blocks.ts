@@ -1,7 +1,113 @@
+import type { BlockAPI } from '../../../types';
 import type { ConversionConfig } from '../../../types/configs/conversion-config';
+import type { SavedData } from '../../../types/data-formats';
 import type { BlockToolData } from '../../../types/tools/block-tool-data';
 import type Block from '../block';
-import { isFunction, isString, log } from '../utils';
+import type BlockToolAdapter from '../tools/block';
+import { isFunction, isString, log, equals, isEmpty } from '../utils';
+import { isToolConvertable } from './tools';
+
+
+/**
+ * Check if block has valid conversion config for export or import.
+ *
+ * @param block - block to check
+ * @param direction - export for block to merge from, import for block to merge to
+ */
+export function isBlockConvertable(block: Block, direction: 'export' | 'import'): boolean {
+  return isToolConvertable(block.tool, direction);
+}
+
+/**
+ * Checks that all the properties of the first block data exist in second block data with the same values.
+ *
+ * Example:
+ *
+ * data1 = { level: 1 }
+ *
+ * data2 = {
+ *    text: "Heading text",
+ *    level: 1
+ *  }
+ *
+ * isSameBlockData(data1, data2) => true
+ *
+ * @param data1 – first block data
+ * @param data2 – second block data
+ */
+export function isSameBlockData(data1: BlockToolData, data2: BlockToolData): boolean {
+  return Object.entries(data1).some((([propName, propValue]) => {
+    return data2[propName] && equals(data2[propName], propValue);
+  }));
+}
+
+/**
+ * Returns list of tools you can convert specified block to
+ *
+ * @param block - block to get conversion items for
+ * @param allBlockTools - all block tools available in the editor
+ */
+export async function getConvertibleToolsForBlock(block: BlockAPI, allBlockTools: BlockToolAdapter[]): Promise<BlockToolAdapter[]> {
+  const savedData = await block.save() as SavedData;
+  const blockData = savedData.data;
+
+  /**
+   * Checking that the block's tool has an «export» rule
+   */
+  const blockTool = allBlockTools.find((tool) => tool.name === block.name);
+
+  if (blockTool !== undefined && !isToolConvertable(blockTool, 'export')) {
+    return [];
+  }
+
+  return allBlockTools.reduce((result, tool) => {
+    /**
+     * Skip tools without «import» rule specified
+     */
+    if (!isToolConvertable(tool, 'import')) {
+      return result;
+    }
+
+    /**
+     * Skip tools that does not specify toolbox
+     */
+    if (tool.toolbox === undefined) {
+      return result;
+    }
+
+    /** Filter out invalid toolbox entries */
+    const actualToolboxItems = tool.toolbox.filter((toolboxItem) => {
+      /**
+       * Skip items that don't pass 'toolbox' property or do not have an icon
+       */
+      if (isEmpty(toolboxItem) || toolboxItem.icon === undefined) {
+        return false;
+      }
+
+      if (toolboxItem.data !== undefined) {
+        /**
+         * When a tool has several toolbox entries, we need to make sure we do not add
+         * toolbox item with the same data to the resulting array. This helps exclude duplicates
+         */
+        if (isSameBlockData(toolboxItem.data, blockData)) {
+          return false;
+        }
+      } else if (tool.name === block.name) {
+        return false;
+      }
+
+      return true;
+    });
+
+    result.push({
+      ...tool,
+      toolbox: actualToolboxItems,
+    } as BlockToolAdapter);
+
+    return result;
+  }, [] as BlockToolAdapter[]);
+}
+
 
 /**
  * Check if two blocks could be merged.
@@ -9,12 +115,32 @@ import { isFunction, isString, log } from '../utils';
  * We can merge two blocks if:
  *  - they have the same type
  *  - they have a merge function (.mergeable = true)
+ *  - If they have valid conversions config
  *
  * @param targetBlock - block to merge to
  * @param blockToMerge - block to merge from
  */
 export function areBlocksMergeable(targetBlock: Block, blockToMerge: Block): boolean {
-  return targetBlock.mergeable && targetBlock.name === blockToMerge.name;
+  /**
+   * If target block has not 'merge' method, we can't merge blocks.
+   *
+   * Technically we can (through the conversion) but it will lead a target block delete and recreation, which is unexpected behavior.
+   */
+  if (!targetBlock.mergeable) {
+    return false;
+  }
+
+  /**
+   * Tool knows how to merge own data format
+   */
+  if (targetBlock.name === blockToMerge.name) {
+    return true;
+  }
+
+  /**
+   * We can merge blocks if they have valid conversion config
+   */
+  return isBlockConvertable(blockToMerge, 'export') && isBlockConvertable(targetBlock, 'import');
 }
 
 /**
@@ -70,3 +196,4 @@ export function convertStringToBlockData(stringToImport: string, conversionConfi
     return {};
   }
 }
+

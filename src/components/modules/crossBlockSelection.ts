@@ -1,5 +1,5 @@
 import Module from '../__module';
-import Block from '../block';
+import type Block from '../block';
 import SelectionUtils from '../selection';
 import * as _ from '../utils';
 
@@ -48,11 +48,11 @@ export default class CrossBlockSelection extends Module {
   }
 
   /**
-   * return boolean is cross block selection started
+   * Return boolean is cross block selection started:
+   * there should be at least 2 selected blocks
    */
   public get isCrossBlockSelectionStarted(): boolean {
-    return !!this.firstSelectedBlock &&
-      !!this.lastSelectedBlock;
+    return !!this.firstSelectedBlock && !!this.lastSelectedBlock && this.firstSelectedBlock !== this.lastSelectedBlock;
   }
 
   /**

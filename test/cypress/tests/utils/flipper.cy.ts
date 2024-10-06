@@ -1,4 +1,4 @@
-import { PopoverItem } from '../../../../types/index.js';
+import type { PopoverItemParams } from '../../../../types/index.js';
 
 /**
  * Mock of some Block Tool
@@ -26,12 +26,21 @@ class SomePlugin {
   /**
    * Used to display our tool in the Toolbox
    */
-  public static get toolbox(): PopoverItem {
+  public static get toolbox(): PopoverItemParams {
     return {
       icon: '₷',
       title: 'Some tool',
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       onActivate: (): void => {},
+    };
+  }
+
+  /**
+   * Extracts data from the plugin's UI
+   */
+  public save(): {data: string} {
+    return {
+      data: '123',
     };
   }
 }
@@ -71,7 +80,8 @@ describe('Flipper', () => {
     cy.get('[data-cy=editorjs]')
       .get('.cdx-some-plugin')
       // Open tunes menu
-      .trigger('keydown', { code: 'Slash', ctrlKey: true })
+      .trigger('keydown', { code: 'Slash',
+        ctrlKey: true })
       // Navigate to delete button (the second button)
       .trigger('keydown', { keyCode: ARROW_DOWN_KEY_CODE })
       .trigger('keydown', { keyCode: ARROW_DOWN_KEY_CODE });

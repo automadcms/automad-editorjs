@@ -85,6 +85,21 @@ declare global {
        * @returns number[] - array of line wrap positions
        */
       getLineWrapPositions(): Chainable<number[]>;
+
+      /**
+       * Dispatches keydown event on subject
+       * Uses the correct KeyboardEvent object to make it work with our code (see below)
+       *
+       * @param keyCode - key code to dispatch
+       */
+      keydown(keyCode: number): Chainable<Subject>;
+
+      /**
+       * Extract content of pseudo element
+       *
+       * @example cy.get('element').getPseudoElementContent('::before').should('eq', 'my-test-string')
+       */
+      getPseudoElementContent(pseudoElement: string): Chainable<string>;
     }
 
     interface ApplicationWindow {
