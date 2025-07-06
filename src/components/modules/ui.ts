@@ -68,7 +68,7 @@ export default class UI extends Module<UINodes> {
    * @returns {DOMRect}
    */
   public get contentRect(): DOMRect {
-    if (this.contentRectCache) {
+    if (this.contentRectCache !== null) {
       return this.contentRectCache;
     }
 
@@ -85,7 +85,7 @@ export default class UI extends Module<UINodes> {
       } as DOMRect;
     }
 
-    this.contentRectCache = someBlock.getBoundingClientRect() as DOMRect;
+    this.contentRectCache = someBlock.getBoundingClientRect();
 
     return this.contentRectCache;
   }
@@ -104,7 +104,7 @@ export default class UI extends Module<UINodes> {
    *
    * @type {DOMRect}
    */
-  private contentRectCache: DOMRect = undefined;
+  private contentRectCache: DOMRect | null = null;
 
   /**
    * Handle window resize only when it finished
@@ -115,6 +115,13 @@ export default class UI extends Module<UINodes> {
     this.windowResize();
   // eslint-disable-next-line @typescript-eslint/no-magic-numbers
   }, 200);
+
+  /**
+   * Handle selection change to manipulate Inline Toolbar appearance
+   */
+  private selectionChangeDebounced = _.debounce(() => {
+    this.selectionChanged();
+  }, selectionChangeDebounceTimeout);
 
   /**
    * Making main interface
@@ -135,7 +142,6 @@ export default class UI extends Module<UINodes> {
      */
     this.loadStyles();
   }
-
 
   /**
    * Toggle read-only state
@@ -160,7 +166,7 @@ export default class UI extends Module<UINodes> {
         /**
          * Bind events for the UI elements
          */
-        this.enableModuleBindings();
+        this.bindReadOnlySensitiveListeners();
       }, {
         timeout: 2000,
       });
@@ -169,7 +175,7 @@ export default class UI extends Module<UINodes> {
        * Unbind all events
        *
        */
-      this.disableModuleBindings();
+      this.unbindReadOnlySensitiveListeners();
     }
   }
 
@@ -222,6 +228,8 @@ export default class UI extends Module<UINodes> {
    */
   public destroy(): void {
     this.nodes.holder.innerHTML = '';
+
+    this.unbindReadOnlyInsensitiveListeners();
   }
 
   /**
@@ -234,6 +242,15 @@ export default class UI extends Module<UINodes> {
     InlineToolbar.close();
     Toolbar.toolbox.close();
   }
+
+  /**
+   * Event listener for 'mousedown' and 'touchstart' events
+   *
+   * @param event - TouchEvent or MouseEvent
+   */
+  private documentTouchedListener = (event: Event): void => {
+    this.documentTouched(event);
+  };
 
   /**
    * Check for mobile mode and save the result
@@ -289,6 +306,8 @@ export default class UI extends Module<UINodes> {
 
     this.nodes.wrapper.appendChild(this.nodes.redactor);
     this.nodes.holder.appendChild(this.nodes.wrapper);
+
+    this.bindReadOnlyInsensitiveListeners();
   }
 
   /**
@@ -332,26 +351,44 @@ export default class UI extends Module<UINodes> {
   }
 
   /**
-   * Bind events on the Editor.js interface
+   * Adds listeners that should work both in read-only and read-write modes
    */
-  private enableModuleBindings(): void {
+  private bindReadOnlyInsensitiveListeners(): void {
+    this.listeners.on(document, 'selectionchange', this.selectionChangeDebounced);
+
+    this.listeners.on(window, 'resize', this.resizeDebouncer, {
+      passive: true,
+    });
+
+    this.listeners.on(this.nodes.redactor, 'mousedown', this.documentTouchedListener, {
+      capture: true,
+      passive: true,
+    });
+
+    this.listeners.on(this.nodes.redactor, 'touchstart', this.documentTouchedListener, {
+      capture: true,
+      passive: true,
+    });
+  }
+
+  /**
+   * Removes listeners that should work both in read-only and read-write modes
+   */
+  private unbindReadOnlyInsensitiveListeners(): void {
+    this.listeners.off(document, 'selectionchange', this.selectionChangeDebounced);
+    this.listeners.off(window, 'resize', this.resizeDebouncer);
+    this.listeners.off(this.nodes.redactor, 'mousedown', this.documentTouchedListener);
+    this.listeners.off(this.nodes.redactor, 'touchstart', this.documentTouchedListener);
+  }
+
+
+  /**
+   * Adds listeners that should work only in read-only mode
+   */
+  private bindReadOnlySensitiveListeners(): void {
     this.readOnlyMutableListeners.on(this.nodes.redactor, 'click', (event: MouseEvent) => {
       this.redactorClicked(event);
     }, false);
-
-    this.readOnlyMutableListeners.on(this.nodes.redactor, 'mousedown', (event: MouseEvent | TouchEvent) => {
-      this.documentTouched(event);
-    }, {
-      capture: true,
-      passive: true,
-    });
-
-    this.readOnlyMutableListeners.on(this.nodes.redactor, 'touchstart', (event: MouseEvent | TouchEvent) => {
-      this.documentTouched(event);
-    }, {
-      capture: true,
-      passive: true,
-    });
 
     this.readOnlyMutableListeners.on(document, 'keydown', (event: KeyboardEvent) => {
       this.documentKeydown(event);
@@ -360,21 +397,6 @@ export default class UI extends Module<UINodes> {
     this.readOnlyMutableListeners.on(document, 'mousedown', (event: MouseEvent) => {
       this.documentClicked(event);
     }, true);
-
-    /**
-     * Handle selection change to manipulate Inline Toolbar appearance
-     */
-    const selectionChangeDebounced = _.debounce(() => {
-      this.selectionChanged();
-    }, selectionChangeDebounceTimeout);
-
-    this.readOnlyMutableListeners.on(document, 'selectionchange', selectionChangeDebounced, true);
-
-    this.readOnlyMutableListeners.on(window, 'resize', () => {
-      this.resizeDebouncer();
-    }, {
-      passive: true,
-    });
 
     /**
      * Start watching 'block-hovered' events that is used by Toolbar for moving
@@ -428,9 +450,9 @@ export default class UI extends Module<UINodes> {
   }
 
   /**
-   * Unbind events on the Editor.js interface
+   * Unbind events that should work only in read-only mode
    */
-  private disableModuleBindings(): void {
+  private unbindReadOnlySensitiveListeners(): void {
     this.readOnlyMutableListeners.clearAll();
   }
 
@@ -693,17 +715,17 @@ export default class UI extends Module<UINodes> {
    * - Move and show the Toolbar
    * - Set a Caret
    *
-   * @param {MouseEvent | TouchEvent} event - touch or mouse event
+   * @param event - touch or mouse event
    */
-  private documentTouched(event: MouseEvent | TouchEvent): void {
+  private documentTouched(event: Event): void {
     let clickedNode = event.target as HTMLElement;
 
     /**
      * If click was fired on Editor`s wrapper, try to get clicked node by elementFromPoint method
      */
     if (clickedNode === this.nodes.redactor) {
-      const clientX = event instanceof MouseEvent ? event.clientX : event.touches[0].clientX;
-      const clientY = event instanceof MouseEvent ? event.clientY : event.touches[0].clientY;
+      const clientX = event instanceof MouseEvent ? event.clientX : (event as TouchEvent).touches[0].clientX;
+      const clientY = event instanceof MouseEvent ? event.clientY : (event as TouchEvent).touches[0].clientY;
 
       clickedNode = document.elementFromPoint(clientX, clientY) as HTMLElement;
     }
@@ -726,7 +748,9 @@ export default class UI extends Module<UINodes> {
      * Move and open toolbar
      * (used for showing Block Settings toggler after opening and closing Inline Toolbar)
      */
-    this.Editor.Toolbar.moveAndOpen();
+    if (!this.Editor.ReadOnly.isEnabled) {
+      this.Editor.Toolbar.moveAndOpen();
+    }
   }
 
   /**

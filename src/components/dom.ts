@@ -373,7 +373,7 @@ export default class Dom {
       nodeText = nodeText.replace(new RegExp(ignoreChars, 'g'), '');
     }
 
-    return nodeText.trim().length === 0;
+    return nodeText.length === 0;
   }
 
   /**
@@ -400,11 +400,6 @@ export default class Dom {
    * @returns {boolean}
    */
   public static isEmpty(node: Node, ignoreChars?: string): boolean {
-    /**
-     * Normalize node to merge several text nodes to one to reduce tree walker iterations
-     */
-    node.normalize();
-
     const treeWalker = [ node ];
 
     while (treeWalker.length > 0) {
@@ -590,6 +585,69 @@ export default class Dom {
       left,
       bottom: top + rect.height,
       right: left + rect.width,
+    };
+  }
+
+  /**
+   * Find text node and offset by total content offset
+   *
+   * @param {Node} root - root node to start search from
+   * @param {number} totalOffset - offset relative to the root node content
+   * @returns {{node: Node | null, offset: number}} - node and offset inside node
+   */
+  public static getNodeByOffset(root: Node, totalOffset: number): {node: Node | null; offset: number} {
+    let currentOffset = 0;
+    let lastTextNode: Node | null = null;
+
+    const walker = document.createTreeWalker(
+      root,
+      NodeFilter.SHOW_TEXT,
+      null
+    );
+
+    let node: Node | null = walker.nextNode();
+
+    while (node) {
+      const textContent = node.textContent;
+      const nodeLength = textContent === null ? 0 : textContent.length;
+
+      lastTextNode = node;
+
+      if (currentOffset + nodeLength >= totalOffset) {
+        break;
+      }
+
+      currentOffset += nodeLength;
+      node = walker.nextNode();
+    }
+
+    /**
+     * If no node found or last node is empty, return null
+     */
+    if (!lastTextNode) {
+      return {
+        node: null,
+        offset: 0,
+      };
+    }
+
+    const textContent = lastTextNode.textContent;
+
+    if (textContent === null || textContent.length === 0) {
+      return {
+        node: null,
+        offset: 0,
+      };
+    }
+
+    /**
+     * Calculate offset inside found node
+     */
+    const nodeOffset = Math.min(totalOffset - currentOffset, textContent.length);
+
+    return {
+      node: lastTextNode,
+      offset: nodeOffset,
     };
   }
 }

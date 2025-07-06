@@ -1,9 +1,30 @@
 # Changelog
 
+### 2.31.0
+
+- `New` - Inline tools (those with `isReadOnlySupported` specified) can now be used in read-only mode
+- `New` - Inline tools (those with `isReadOnlySupported` specified) shortcuts now work in read-only mode
+- `Improvement` - Block manager passes target tool config to the `conversionConfig.import` method on conversion
+- `Fix` - Fix selection of first block in read-only initialization with "autofocus=true"
+- `Fix` - Incorrect caret position after blocks merging in Safari
+- `Fix` - Several toolbox items exported by the one tool have the same shortcut displayed in toolbox
+- `Improvement` - The current block reference will be updated in read-only mode when blocks are clicked
+- `Fix` - codex-notifier and codex-tooltip moved from devDependencies to dependencies in package.json to solve type errors
+- `Fix` - Handle whitespace input in empty placeholder elements to prevent caret from moving unexpectedly to the end of the placeholder
+- `Fix` - Fix the memory leak issue in `Shortcuts` class
+- `Fix` - Fix when / overides selected text outside of the editor
+- `DX` - Tools submodules removed from the repository
+- `Improvement` - Shift + Down/Up will allow to select next/previous line instead of Inline Toolbar flipping
+- `Improvement` - The API `caret.setToBlock()` offset now works across the entire block content, not just the first or last node.
+
+### 2.30.7
+
+- `Fix` - Link insertion in Safari fixed
+
 ### 2.30.6
 
-– `Fix` – Fix the display of ‘Convert To’ near blocks that do not have the ‘conversionConfig.export’ rule specified
-– `Fix` – The Plus button does not appear when the editor is loaded in an iframe in Chrome
+- `Fix` – Fix the display of ‘Convert To’ near blocks that do not have the ‘conversionConfig.export’ rule specified
+- `Fix` – The Plus button does not appear when the editor is loaded in an iframe in Chrome
 - `Fix` - Prevent inline toolbar from closing in nested instance of editor
 
 ### 2.30.5
@@ -33,7 +54,7 @@
 - `New` – Block Tunes now supports nesting items
 - `New` – Block Tunes now supports separator items
 - `New` – *Menu Config* – New item type – HTML
-– `New` – *Menu Config* – Default and HTML items now support hints
+- `New` – *Menu Config* – Default and HTML items now support hints
 - `New` – Inline Toolbar has new look 💅
 - `New` – Inline Tool's `render()` now supports [Menu Config](https://editorjs.io/menu-config/) format
 - `New` – *ToolsAPI* – All installed block tools now accessible via ToolsAPI `getBlockTools()` method
@@ -42,11 +63,11 @@
 - `New` – "Convert to" control is now also available in Block Tunes
 - `New` — Editor.js now supports contenteditable placeholders out of the box. Just add `data-placeholder` or `data-placeholder-active` attribute to make it work. The first one will work like native placeholder while the second one will show placeholder only when block is current.
 - `Improvement` — Now Paragraph placeholder will be shown for the current paragraph, not only the first one.
-- `Improvment` - The API `blocks.update` now accepts `tunes` data as optional third argument and makes `data` - block data as optional.
+- `Improvement` - The API `blocks.update` now accepts `tunes` data as optional third argument and makes `data` - block data as optional.
 - `Improvement` — The ability to merge blocks of different types (if both tools provide the conversionConfig)
 - `Improvement` - The API `blocks.convert()` now returns the new block API
 - `Improvement` - The API `caret.setToBlock()` now can accept either BlockAPI or block index or block id
-- `Impovement` – *MenuConfig* – `TunesMenuConfig` type is deprecated, use the `MenuConfig` instead
+- `Improvement` – *MenuConfig* – `TunesMenuConfig` type is deprecated, use the `MenuConfig` instead
 – `Improvement` — *Types* — `BlockToolConstructorOptions` type improved, `block` and `config` are not optional anymore
 - `Improvement` - The Plus button and Block Tunes toggler are now better aligned with large line-height blocks, such as Headings
 - `Improvement` — Creating links on Android devices: now the mobile keyboard will have an "Enter" key for accepting the inserted link.
