@@ -38,6 +38,7 @@ export default class DeleteTune implements BlockTune {
   public render(): MenuConfig {
     return {
       icon: IconCross,
+      sort: 302,
       title: this.api.i18n.t('Delete'),
       name: 'delete',
       confirmation: {

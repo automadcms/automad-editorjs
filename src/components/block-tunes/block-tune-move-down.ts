@@ -47,6 +47,7 @@ export default class MoveDownTune implements BlockTune {
   public render(): TunesMenuConfig {
     return {
       icon: IconChevronDown,
+      sort: 303,
       title: this.api.i18n.t('Move down'),
       onActivate: (): void => this.handleClick(),
       name: 'move-down',

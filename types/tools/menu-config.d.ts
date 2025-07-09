@@ -1,4 +1,9 @@
-import { PopoverItemDefaultBaseParams, PopoverItemHtmlParams, PopoverItemSeparatorParams, WithChildren } from '../utils/popover';
+import {
+  PopoverItemDefaultBaseParams,
+  PopoverItemHtmlParams,
+  PopoverItemSeparatorParams,
+  WithChildren,
+} from "../utils/popover";
 
 /**
  * Menu configuration format.
@@ -13,16 +18,19 @@ type MenuConfigDefaultBaseParams = PopoverItemDefaultBaseParams & {
   /**
    * Displayed text.
    * Alias for title property
-   * 
+   *
    * @deprecated - use title property instead
    */
-  label?: string
+  label?: string;
 };
 
 /**
  * Menu Config item with confirmation
  */
-type MenuConfigItemDefaultWithConfirmationParams = Omit<MenuConfigDefaultBaseParams, 'onActivate'> & {
+type MenuConfigItemDefaultWithConfirmationParams = Omit<
+  MenuConfigDefaultBaseParams,
+  "onActivate"
+> & {
   /**
    * Items with confirmation should not have onActivate handler
    */
@@ -33,22 +41,22 @@ type MenuConfigItemDefaultWithConfirmationParams = Omit<MenuConfigDefaultBasePar
    * May be used to ask user for confirmation before executing item activation handler.
    */
   confirmation: MenuConfigDefaultBaseParams;
-
-}
+};
 
 /**
  * Default, non-separator and non-html Menu Config items type
  */
-type MenuConfigItemDefaultParams = 
-  MenuConfigItemDefaultWithConfirmationParams |
-  MenuConfigDefaultBaseParams |
-  WithChildren<MenuConfigDefaultBaseParams>;
+type MenuConfigItemDefaultParams =
+  | MenuConfigItemDefaultWithConfirmationParams
+  | MenuConfigDefaultBaseParams
+  | WithChildren<MenuConfigDefaultBaseParams>;
 
 /**
  * Single Menu Config item
  */
-type MenuConfigItem = 
-  MenuConfigItemDefaultParams |
-  PopoverItemSeparatorParams |
-  PopoverItemHtmlParams |
-  WithChildren<PopoverItemHtmlParams>;
+type MenuConfigItem = { sort?: number } & (
+  | MenuConfigItemDefaultParams
+  | PopoverItemSeparatorParams
+  | PopoverItemHtmlParams
+  | WithChildren<PopoverItemHtmlParams>
+);

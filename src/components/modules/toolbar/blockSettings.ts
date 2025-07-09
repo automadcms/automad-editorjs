@@ -254,6 +254,7 @@ export default class BlockSettings extends Module<BlockSettingsNodes> {
     }
 
     items.push(...commonTunes);
+    items.sort((a, b) => (a.sort ?? 100) - (b.sort ?? 100))
 
     return items.map(tune => this.resolveTuneAliases(tune));
   }

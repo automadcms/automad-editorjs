@@ -296,7 +296,7 @@ export default class UI extends Module<UINodes> {
      * @todo Forced layout. Get rid of this feature
      */
     if (this.nodes.holder.offsetWidth < this.contentRect.width) {
-      this.nodes.wrapper.classList.add(this.CSS.editorWrapperNarrow);
+      // this.nodes.wrapper.classList.add(this.CSS.editorWrapperNarrow);
     }
 
     /**
