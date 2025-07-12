@@ -6,21 +6,7 @@ if [[ $(git status -s) ]]; then
   echo
 fi
 
-echo "Choose type of release:"
-echo
-echo "  1) Patch (default)"
-echo "  2) Minor"
-echo "  3) Major"
-echo
-read -n 1 -p "Please select a number or press Enter for a patch: " option
-echo
-
-case $option in
-1) version=patch ;;
-2) version=minor ;;
-3) version=major ;;
-*) version=patch ;;
-esac
+read -p "Please enter a new tag: " version
 
 while true; do
   read -p "Create $version version? (y/n) " continue
