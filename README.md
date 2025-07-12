@@ -16,7 +16,7 @@ v2.31.0-rc.10 -> v2.31.0-rc.10-am.0
 
 This fork diverges in some details that are only required in Automad.
 
-| [Compage to upstream](https://github.com/codex-team/editor.js/compare/next...automadcms:automad-editorjs:next) |
+| [Compare to upstream](https://github.com/codex-team/editor.js/compare/next...automadcms:automad-editorjs:next) |
 | --- |
 
 - The inline toolbar is positioned correctly also when being used inside a nested instance of Editor.js. ([6cd10fe1](https://github.com/automadcms/automad-editorjs/commit/6cd10fe1df7e751aee9ce505d85a09fad480a43b))
