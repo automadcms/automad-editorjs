@@ -40,7 +40,7 @@ cd /path/to/automad
 npm unlink automad-editorjs
 npm i -D automad-editorjs
 cd /path/to/editorjs
-npm unlink
+npm unlink -g
 ```
 
 ---
