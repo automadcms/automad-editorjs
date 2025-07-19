@@ -50,7 +50,7 @@ export default class UI extends Module<UINodes> {
   /**
    * The actual cached selection.
    */
-  private prevSelection: any = null;
+  private prevSelection: string | null = null;
 
   /**
    * Editor.js UI CSS class names
@@ -806,10 +806,10 @@ export default class UI extends Module<UINodes> {
   private selectionChanged(): void {
     const { CrossBlockSelection, BlockSelection } = this.Editor;
     const focusedElement = Selection.anchorElement;
-    const currentSelection = window.getSelection();
+    const currentSelection = window.getSelection()?.toString() ?? null;
 
-    const sameSelection = currentSelection == this.prevSelection && currentSelection;
-    const sameFocus = this.prevSelectionAnchorElement == focusedElement && focusedElement;
+    const sameSelection = (currentSelection == this.prevSelection) && !!currentSelection;
+    const sameFocus = (focusedElement == this.prevSelectionAnchorElement) && !!focusedElement;
 
     if (sameSelection && sameFocus) {
       return;
