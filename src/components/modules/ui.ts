@@ -42,6 +42,12 @@ interface UINodes {
  */
 export default class UI extends Module<UINodes> {
   /**
+   * This is the cached selection anchor element in order to check if the selection
+   * has actually changed and prevent inifinite firing and handling of the selectionchange event.
+   */
+  private prevSelectionAnchorElement: Element | null = null;
+
+  /**
    * Editor.js UI CSS class names
    *
    * @returns {{editorWrapper: string, editorZone: string}}
@@ -787,6 +793,7 @@ export default class UI extends Module<UINodes> {
     }
   }
 
+
   /**
    * Handle selection changes on mobile devices
    * Uses for showing the Inline Toolbar
@@ -794,6 +801,12 @@ export default class UI extends Module<UINodes> {
   private selectionChanged(): void {
     const { CrossBlockSelection, BlockSelection } = this.Editor;
     const focusedElement = Selection.anchorElement;
+
+    if (this.prevSelectionAnchorElement == focusedElement) {
+      return;
+    }
+
+    this.prevSelectionAnchorElement = focusedElement;
 
     if (CrossBlockSelection.isCrossBlockSelectionStarted) {
       // Removes all ranges when any Block is selected
