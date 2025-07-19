@@ -12,6 +12,7 @@ import { ModuleConfig } from '../../../types-internal/module-config';
 import InlineTool from '../../tools/inline';
 import { CommonInternalSettings } from '../../tools/base';
 import { IconChevronDown } from '@codexteam/icons';
+import UI from '../ui';
 
 /**
  * Inline Toolbar elements
@@ -321,6 +322,7 @@ export default class InlineToolbar extends Module<InlineToolbarNodes> {
   private move(): void {
     const selectionRect = SelectionUtils.rect as DOMRect;
     const wrapperOffset = this.Editor.UI.nodes.wrapper.getBoundingClientRect();
+    const isNestedEditor = !!this.Editor.UI.nodes.holder.closest(`.${this.Editor.UI.CSS.editorWrapper}`)
     const newCoords = {
       x: selectionRect.x - wrapperOffset.x,
       y: selectionRect.y +
@@ -330,13 +332,13 @@ export default class InlineToolbar extends Module<InlineToolbarNodes> {
         this.toolbarVerticalMargin,
     };
 
-    const realRightCoord = newCoords.x + this.width;
+    const realRightCoord = isNestedEditor ? newCoords.x + this.width : newCoords.x + this.width + wrapperOffset.x;
 
     /**
      * Prevent InlineToolbar from overflowing the content zone on the right side
      */
     if (realRightCoord > this.Editor.UI.contentRect.right) {
-      newCoords.x = this.Editor.UI.contentRect.right - this.width;
+      newCoords.x = isNestedEditor ? this.Editor.UI.contentRect.right - this.width : this.Editor.UI.contentRect.right - this.width - wrapperOffset.x;
     }
 
     this.nodes.wrapper.style.left = Math.floor(newCoords.x) + 'px';

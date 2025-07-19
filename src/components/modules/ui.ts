@@ -48,6 +48,11 @@ export default class UI extends Module<UINodes> {
   private prevSelectionAnchorElement: Element | null = null;
 
   /**
+   * The actual cached selection.
+   */
+  private prevSelection: any = null;
+
+  /**
    * Editor.js UI CSS class names
    *
    * @returns {{editorWrapper: string, editorZone: string}}
@@ -801,12 +806,17 @@ export default class UI extends Module<UINodes> {
   private selectionChanged(): void {
     const { CrossBlockSelection, BlockSelection } = this.Editor;
     const focusedElement = Selection.anchorElement;
+    const currentSelection = window.getSelection();
 
-    if (this.prevSelectionAnchorElement == focusedElement) {
+    const sameSelection = currentSelection == this.prevSelection && currentSelection;
+    const sameFocus = this.prevSelectionAnchorElement == focusedElement && focusedElement;
+
+    if (sameSelection && sameFocus) {
       return;
     }
 
     this.prevSelectionAnchorElement = focusedElement;
+    this.prevSelection = currentSelection;
 
     if (CrossBlockSelection.isCrossBlockSelectionStarted) {
       // Removes all ranges when any Block is selected
