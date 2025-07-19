@@ -77,5 +77,7 @@ export interface PopoverItemWithoutConfirmation extends PopoverItemBase {
 /**
  * Represents single popover item
  */
-export type PopoverItem = PopoverItemWithConfirmation | PopoverItemWithoutConfirmation
+export type PopoverItem = (PopoverItemWithConfirmation | PopoverItemWithoutConfirmation) & {
+  sort?: number;
+}
 

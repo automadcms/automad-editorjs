@@ -48,6 +48,7 @@ export default class MoveUpTune implements BlockTune {
       title: this.api.i18n.t('Move up'),
       onActivate: (): void => this.handleClick(),
       name: 'move-up',
+      sort: 301,
     };
   }
 

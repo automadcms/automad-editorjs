@@ -50,6 +50,7 @@ export default class MoveDownTune implements BlockTune {
       title: this.api.i18n.t('Move down'),
       onActivate: (): void => this.handleClick(),
       name: 'move-down',
+      sort: 303,
     };
   }
 

@@ -116,6 +116,8 @@ export default class BlockSettings extends Module<BlockSettingsNodes> {
      */
     const [tunesItems, customHtmlTunesContainer] = targetBlock.getTunes();
 
+    tunesItems.sort((a, b) => (a.sort ?? 100) - (b.sort ?? 100))
+
     /** Tell to subscribers that block settings is opened */
     this.eventsDispatcher.emit(this.events.opened);
     this.popover = new Popover({

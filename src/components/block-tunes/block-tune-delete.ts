@@ -44,6 +44,7 @@ export default class DeleteTune implements BlockTune {
         title: this.api.i18n.t('Click to delete'),
         onActivate: (): void => this.handleClick(),
       },
+      sort: 302,
     };
   }
 
