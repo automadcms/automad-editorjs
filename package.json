@@ -1,6 +1,6 @@
 {
   "name": "automad-editorjs",
-  "version": "2.29.0-am.3",
+  "version": "2.29.0-am.4",
   "description": "Editor.js — Native JS, based on API and Open Source",
   "main": "dist/editorjs.umd.js",
   "module": "dist/editorjs.mjs",
