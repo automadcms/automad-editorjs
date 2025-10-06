@@ -24,12 +24,22 @@ export default class Renderer extends Module {
         /**
          * Create Blocks instances
          */
-        const blocks = blocksData.map(({ type: tool, data, tunes, id }) => {
-          if (Tools.available.has(tool) === false) {
-            _.logLabeled(`Tool «${tool}» is not found. Check 'tools' property at the Editor.js config.`, 'warn');
+        const blocks = blocksData.map((blockData) => {
+          let { type: tool, data, tunes, id } = blockData;
 
-            data = this.composeStubDataForTool(tool, data, id);
-            tool = Tools.stubTool;
+          if (Tools.available.has(tool) === false) {
+            const { unknownBlockHandler } = this.config;
+
+            if (!unknownBlockHandler) {
+              _.logLabeled(`Tool «${tool}» is not found. Check 'tools' property at the Editor.js config.`, 'warn');
+            }
+
+            const handledBlockData = unknownBlockHandler ? unknownBlockHandler(blockData) : null;
+            const stubData = this.composeStubDataForTool(tool, data, id);
+
+            tool = handledBlockData?.type || Tools.stubTool;
+            data = handledBlockData?.data || stubData.savedData;
+            tunes = handledBlockData?.tunes || tunes;
           }
 
           let block: Block;

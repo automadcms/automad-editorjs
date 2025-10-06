@@ -1,5 +1,5 @@
 import {ToolConstructable, ToolSettings} from '../tools';
-import {API, LogLevels, OutputData} from '../index';
+import {API, LogLevels, OutputBlockData, OutputData} from '../index';
 import {SanitizerConfig} from './sanitizer-config';
 import {I18nConfig} from './i18n-config';
 import { BlockMutationEvent } from '../events/block';
@@ -115,4 +115,11 @@ export interface EditorConfig {
      */
     nonce?: string;
   }
+
+  /**
+   * A handler for unknown blocks.
+   *
+   * @param blockData
+   */
+  unknownBlockHandler?(blockData: OutputBlockData): OutputBlockData | null;
 }
