@@ -15,6 +15,7 @@ This fork diverges in some details that are only required in Automad.
 - add option to sort block tunes [307f1e9](https://github.com/automadcms/automad-editorjs/commit/307f1e9f3868d1b6d3abf3a4748dc86266253669)
 - fix position of inline toolbar inside nested editors [99d33da](https://github.com/automadcms/automad-editorjs/commit/99d33da3e5846d3f98014490b1cec87ba6d13daf)
 - fix infinite re-rendering of actions inside inline toolbar [3d6ac02](https://github.com/automadcms/automad-editorjs/commit/3d6ac022c3ecf049f79424bf057668cff921fd55)
+- add option to define a handler for unknown block types [e52024a](https://github.com/automadcms/automad-editorjs/commit/e52024ac86dc1299313b9ed97c91b059a91158ab)
 
 ## Versioning
 
