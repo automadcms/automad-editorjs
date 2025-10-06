@@ -13,6 +13,7 @@
     "editorjs"
   ],
   "scripts": {
+    "release": "bash bin/release.sh",
     "dev": "vite",
     "build": "vite build --mode production",
     "build:test": "vite build --mode test",
