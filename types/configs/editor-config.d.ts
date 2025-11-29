@@ -122,4 +122,10 @@ export interface EditorConfig {
    * @param blockData
    */
   unknownBlockHandler?(blockData: OutputBlockData): OutputBlockData | null;
+
+  /**
+   * A function that is used bey keyboard event handlers in order to determine dynamically
+   * if an event handler should be executed.
+   */
+  canUseKeyboard?():boolean;
 }

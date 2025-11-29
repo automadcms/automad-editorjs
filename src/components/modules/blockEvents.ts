@@ -12,12 +12,21 @@ import { areBlocksMergeable } from '../utils/blocks';
  *
  */
 export default class BlockEvents extends Module {
+  private _canUseKeyboard(): boolean {
+    return !this.config.canUseKeyboard || this.config.canUseKeyboard();
+  }
+
+
   /**
    * All keydowns on Block
    *
    * @param {KeyboardEvent} event - keydown
    */
   public keydown(event: KeyboardEvent): void {
+    if (!this._canUseKeyboard()) {
+      return;
+    }
+
     /**
      * Run common method for all keydown events
      */
