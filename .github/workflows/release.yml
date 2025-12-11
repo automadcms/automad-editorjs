@@ -41,4 +41,12 @@ jobs:
       - name: Build
         run: npm run build
       - name: Publish
-        run: npm publish
+        run: |
+          VERSION_RAW=${GITHUB_REF#refs/tags/}
+          VERSION=${VERSION_RAW#v}
+          echo "Publishing version: $VERSION"
+          if [[ "$VERSION" == *-* ]]; then
+            npm publish --tag "$VERSION"
+          else
+            npm publish
+          fi
