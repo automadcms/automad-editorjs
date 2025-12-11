@@ -36,7 +36,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/automadcms/editorjs.git"
+    "url": "git+https://github.com/automadcms/automad-editorjs.git"
   },
   "devDependencies": {
     "@babel/register": "^7.21.0",
