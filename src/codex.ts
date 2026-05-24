@@ -11,6 +11,8 @@ import './components/polyfills';
 import Core from './components/core';
 import * as _ from './components/utils';
 import { destroy as destroyTooltip } from './components/utils/tooltip';
+import BlockSelection from './components/modules/blockSelection';
+import Paste from './components/modules/paste';
 
 declare const VERSION: string;
 
@@ -26,6 +28,16 @@ export default class EditorJS {
    * Promise that resolves when core modules are ready and UI is rendered on the page
    */
   public isReady: Promise<void>;
+
+  /**
+   * The block selection.
+   */
+  public blockSelection: BlockSelection = null;
+
+  /**
+   * The paste handler class.
+   */
+  public paste: Paste;
 
   /**
    * Stores destroy method implementation.
@@ -139,5 +151,9 @@ export default class EditorJS {
             this[alias] = editor.moduleInstances.API.methods[key][name];
           });
       });
+
+    // Also expose the following modules.
+    this.blockSelection = editor.moduleInstances.BlockSelection;
+    this.paste = editor.moduleInstances.Paste;
   }
 }

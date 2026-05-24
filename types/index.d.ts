@@ -36,6 +36,8 @@ import { BlockAddedMutationType, BlockAddedEvent } from './events/block/BlockAdd
 import { BlockChangedMutationType, BlockChangedEvent } from './events/block/BlockChanged';
 import { BlockMovedMutationType, BlockMovedEvent } from './events/block/BlockMoved';
 import { BlockRemovedMutationType, BlockRemovedEvent } from './events/block/BlockRemoved';
+import BlockSelection from '../src/components/modules/blockSelection';
+import Paste from '../src/components/modules/paste';
 
 /**
  * Interfaces used for development
@@ -137,6 +139,8 @@ declare class EditorJS {
   public toolbar: Toolbar;
   public inlineToolbar: InlineToolbar;
   public readOnly: ReadOnly;
+  public blockSelection: BlockSelection;
+  public paste: Paste;
   constructor(configuration?: EditorConfig|string);
 
   /**
