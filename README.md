@@ -17,6 +17,7 @@ This fork diverges in some details that are only required in Automad.
 - fix infinite re-rendering of actions inside inline toolbar [3d6ac02](https://github.com/automadcms/automad-editorjs/commit/3d6ac022c3ecf049f79424bf057668cff921fd55)
 - add option to define a handler for unknown block types [e52024a](https://github.com/automadcms/automad-editorjs/commit/e52024ac86dc1299313b9ed97c91b059a91158ab)
 - add option to define a test for running keyboard event handlers [0681c87](https://github.com/automadcms/automad-editorjs/commit/0681c8741ae058142d98671308604ce9d9cc1cb7)
+- expose block selection and paste modules to editor instance [1a2cf84](https://github.com/automadcms/automad-editorjs/commit/1a2cf84787885b188b15a8a01eba202d75085d84)
 
 ## Versioning
 
