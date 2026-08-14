@@ -20,7 +20,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Use Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v6
       - name: Update npm
         run: npm install -g npm@latest
       - name: Install
