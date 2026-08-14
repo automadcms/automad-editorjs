@@ -1,0 +1,22 @@
+name: Release Notes
+
+on:
+  push:
+    tags:
+      - "*"
+
+permissions:
+  contents: write
+
+jobs:
+  release-notes:
+    name: Release Notes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: marcantondahmen/release-notes-action@master
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          prerelease: false
+          draft: false
+          filter: "^(feat|fix|refactor|docs)"
+          strict: true
