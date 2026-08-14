@@ -6,6 +6,9 @@ if [[ $(git status -s) ]]; then
   echo
 fi
 
+current=$(npm pkg get version)
+
+echo "Current version is $current"
 read -p "Please enter a new tag: " version
 
 while true; do
