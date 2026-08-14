@@ -18,6 +18,7 @@ This fork diverges in some details that are only required in Automad.
 - add option to define a handler for unknown block types [e52024a](https://github.com/automadcms/automad-editorjs/commit/e52024ac86dc1299313b9ed97c91b059a91158ab)
 - add option to define a test for running keyboard event handlers [0681c87](https://github.com/automadcms/automad-editorjs/commit/0681c8741ae058142d98671308604ce9d9cc1cb7)
 - expose block selection and paste modules to editor instance [1a2cf84](https://github.com/automadcms/automad-editorjs/commit/1a2cf84787885b188b15a8a01eba202d75085d84)
+- shorten block ids [77260ee](https://github.com/automadcms/automad-editorjs/commit/77260ee538313a7f96bb3f36662df9e16688483c)
 
 ## Versioning
 
